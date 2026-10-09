@@ -275,16 +275,17 @@
         }
 
         function forceCloseApp() {
-            document.body.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; z-index: 99999;">
-                    <div class="glass" style="width: 320px; padding: 30px; text-align: center; border: 1px solid rgba(244, 63, 94, 0.5); box-shadow: 0 15px 35px rgba(225, 29, 72, 0.3);">
-                        <div style="font-size: 3rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(244,63,94,0.5));">🚫</div>
-                        <h2 style="color: #f43f5e; margin-bottom: 10px; font-size: 1.25rem; letter-spacing: 1.5px; font-weight: 700;">AKSES DIBLOKIR</h2>
-                        <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 24px;">User/Pass tidak valid.<br><span style="color: #64748b; font-size: 0.75rem; display: block; margin-top: 8px;">Sistem ditutup secara otomatis...</span></p>
-                    </div>
-                </div>`;
-            setTimeout(() => { window.close(); }, 3000);
-        }
+    document.body.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; display: flex; justify-content: center; align-items: center; z-index: 99999;">
+            <div style="background: #ffffff; border: 3px solid #1e293b; width: 320px; padding: 30px; text-align: center; border-radius: 0; box-shadow: 8px 8px 0px rgba(30, 41, 59, 0.15);">
+                <div style="font-size: 3rem; margin-bottom: 12px;">🚫</div>
+                <h2 style="color: #dc2626; margin-bottom: 10px; font-size: 1.25rem; letter-spacing: 1.5px; font-weight: 800; text-transform: uppercase;">Akses Diblokir</h2>
+                <p style="color: #475569; font-size: 0.85rem; margin-bottom: 24px; font-weight: 500;">Batas percobaan gagal.<br><span style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 8px;">Mematikan sesi...</span></p>
+            </div>
+        </div>`;
+    // Memaksa browser pindah ke halaman kosong karena window.close() diblokir browser
+    setTimeout(() => { window.location.href = "about:blank"; }, 2500);
+}
 
         const namaBulanMap = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
