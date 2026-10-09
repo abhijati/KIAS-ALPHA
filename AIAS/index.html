@@ -330,11 +330,23 @@
             const guestView = document.getElementById('guestView');
 
             if (tab === 'input') {
-                tabBtnInput.classList.add('active'); tabBtnView.classList.remove('active');
-                adminForm.classList.remove('hidden'); guestView.classList.add('hidden');
+                tabBtnInput.classList.add('active'); 
+                tabBtnView.classList.remove('active');
+                adminForm.classList.remove('hidden'); 
+                guestView.classList.add('hidden');
+                
+                // 👇 JURUS ANTI-NYANGKUT: Paksa tombol nyala tiap kali buka tab Input!
+                const btnSave = document.getElementById('btnSave');
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.innerText = isEditMode ? "UPDATE DATA ASET" : "SIMPAN KE DATABASE";
+                }
+
             } else {
-                tabBtnView.classList.add('active'); tabBtnInput.classList.remove('active');
-                adminForm.classList.add('hidden'); guestView.classList.remove('hidden');
+                tabBtnView.classList.add('active'); 
+                tabBtnInput.classList.remove('active');
+                adminForm.classList.add('hidden'); 
+                guestView.classList.remove('hidden');
                 loadCloudData();
             }
         }
