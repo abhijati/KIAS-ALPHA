@@ -610,11 +610,29 @@
             closeConfirmModal(); 
             const btn = document.getElementById('btnDeleteAsset'); btn.innerText = "MENGHAPUS..."; btn.disabled = true;
             try {
-                await fetch(CLOUD_API, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "delete", kode: kode }) });
-                localStorage.removeItem('ais_asd_backup'); showToast("ASET BERHASIL DIHAPUS", "success");
-                btn.innerText = "⚠️ HAPUS ASET INI"; btn.disabled = false;
-                document.getElementById('assetSelect').value = ""; displaySelectedAsset(); setTimeout(loadCloudData, 1000);
-            } catch (err) { showToast("GAGAL MENGHAPUS", "error"); btn.innerText = "⚠️ HAPUS ASET INI"; btn.disabled = false; }
+                await fetch(CLOUD_API, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                showToast(isEditMode ? "DATA BERHASIL DIUPDATE!" : "ASET BERHASIL DISIMPAN", "success");
+                
+                autoSelectKode = kode; 
+                
+                if(isEditMode) batalkanEdit(); 
+                else {
+                    document.getElementById('nama').value = ''; document.getElementById('kode').value = '';
+                    document.getElementById('hargaBeli').value = ''; document.getElementById('susutBulan').value = '';
+                    document.getElementById('fotoInput').value = '';
+                }
+                
+                localStorage.removeItem('ais_asd_backup');
+                switchAdminTab('view'); 
+
+            } catch (err) {
+                showToast("GAGAL MENGIRIM DATA", "error");
+            } finally {
+                // 👇👇 INI OBATNYA BRO! 👇👇
+                // Pastikan gembok tombol dibuka lagi setelah proses selesai (baik sukses maupun gagal)
+                btn.disabled = false; 
+                btn.innerText = isEditMode ? "UPDATE DATA ASET" : "SIMPAN KE DATABASE";
+            }
         }
 
         async function saveData() {
