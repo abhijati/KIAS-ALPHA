@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIAS - Smart Asset System (ASD)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="customConfirm" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s ease;">
+        <div class="glass" style="width: 320px; padding: 24px; text-align: center; border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: 0 10px 25px rgba(225, 29, 72, 0.2);">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">⚠️</div>
+            <h3 style="color: #f43f5e; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px;">KONFIRMASI HAPUS</h3>
+            <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5;" id="confirmText">Yakin ingin menghapus aset ini?</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="closeConfirmModal()" class="btn" style="background: transparent; border: 1px solid #475569; color: #94a3b8; width: 50%; font-size: 0.75rem;">BATAL</button>
+                <button onclick="executeHapus()" class="btn" style="background: #e11d48; color: #ffffff; width: 50%; font-size: 0.75rem; border: 1px solid #be123c;">HAPUS ASET</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass">
+        <div class="logo-section">
+            <h1 class="logo-text">AIAS<span style="color:var(--accent)">.</span></h1>
+            <p class="sub-text">ASD INVENTORY ASSETS SYSTEM</p>
+            <div id="roleBadge" class="role-badge hidden">Authorized</div>
+        </div>
+        
+        <div id="loginPage">
+            <div class="input-group">
+                <input type="text" id="user" placeholder="Username (admin / guest)">
+            </div>
+            <div class="input-group">
+                <input type="password" id="pass" placeholder="Password" onkeypress="if(event.key === 'Enter') doLogin()">
+            </div>
+            <button onclick="doLogin()" class="btn">LOGIN</button>
+        </div>
+
+        <div id="dashboardPage" class="hidden">
+            <div id="adminTabs" class="tab-menu hidden">
+                <button class="tab-btn active" id="tabBtnInput" onclick="switchAdminTab('input')">Input Aset</button>
+                <button class="tab-btn" id="tabBtnView" onclick="switchAdminTab('view')">Lihat Database</button>
+            </div>
+
+            <!-- FORM INPUT / EDIT -->
+            <div id="adminForm" class="hidden">
+                
+                <div id="editModeBanner" style="display: none; background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; color: #60a5fa; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-size: 0.8rem; font-weight: bold;">
+                    EDIT MODE 
+                </div>
+
+                <div class="input-group">
+                    <label>Nama Aset</label>
+                    <input type="text" id="nama" placeholder="Misal: Mesin Planer">
+                </div>
+                <div class="input-group">
+                    <label>Kode Serial</label>
+                    <input type="text" id="kode" placeholder="ASD/MSN/2026/PROD/018">
+                </div>
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Kategori</label>
+                        <select id="kategori">
+                            <option value="Mesin Produksi">Mesin Produksi</option>
+                            <option value="Tanah">Tanah</option>
+                            <option value="Bangunan">Bangunan</option>
+                            <option value="Kendaraan">Kendaraan</option>
+                            <option value="Elektronik">Elektronik</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Alat Kantor">Alat Kantor</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Lokasi</label>
+                        <input type="text" id="lokasi" placeholder="Misal:  KANTOR">
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Harga Perolehan (Rp)</label>
+                        <input type="number" id="hargaBeli" placeholder="Misal: 15000000">
+                    </div>
+                    <div class="input-group">
+                        <label>Susut / Bulan (Rp)</label>
+                        <input type="number" id="susutBulan" placeholder="Misal: 250000">
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Bulan Perolehan</label>
+                        <select id="bulanBeli">
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September">September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tahun Perolehan</label>
+                        <input type="number" id="tahun" value="2026">
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Kondisi</label>
+                        <select id="kondisi">
+                            <option value="Berfungsi">Berfungsi</option>
+                            <option value="Perbaikan">Perbaikan</option>
+                            <option value="Rusak">Rusak</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Foto Aset <span style="font-size: 0.65rem; color:#94a3b8;">(Opsional jika Edit)</span></label>
+                        <input type="file" id="fotoInput" accept="image/*" style="padding: 0.55rem;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button id="btnCancelEdit" onclick="batalkanEdit()" class="btn" style="background: transparent; border: 1px solid #475569; color: #94a3b8; display: none; width: 30%;">BATAL</button>
+                    <button id="btnSave" onclick="saveData()" class="btn btn-save" style="flex: 1;">SIMPAN KE DATABASE</button>
+                </div>
+            </div>
+
+            <!-- GUEST / VIEWER PANEL -->
+            <div id="guestView" class="hidden">
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Urutkan</label>
+                        <select id="sortOption" onchange="renderAssetOptions()">
+                            <option value="newest">Terbaru</option>
+                            <option value="category">Kategori</option>
+                            <option value="name">Nama (A-Z)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Cari Aset</label>
+                        <input type="text" id="searchInput" placeholder="Ketik nama / kode..." oninput="renderAssetOptions()">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Pilih Aset Terdaftar</label>
+                    <select id="assetSelect" onchange="displaySelectedAsset()">
+                        <option value="">-- Memuat Database... --</option>
+                    </select>
+                </div>
+                
+                <div class="viewer-card" id="detailCard">
+                    <div class="asset-title-box">
+                        <div>
+                            <div class="asset-main-name" id="vNama">-</div>
+                            <div class="asset-main-code" id="vKode">-</div>
+                        </div>
+                        <span class="status-pill" id="vKondisi">NORMAL</span>
+                    </div>
+
+                    <div class="media-preview-container">
+                        <div class="asset-photo-box" id="vPhotoBox">
+                            <span>TIDAK ADA FOTO</span>
+                        </div>
+                        <div class="qr-box">
+                            <div id="qrcode"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sub" onclick="downloadQRCode()" style="margin-bottom: 0.8rem; font-size: 0.62rem;">DOWNLOAD STIKER QR</button>
+
+                    <div class="spec-grid">
+                        <div class="spec-item">
+                            <div class="spec-label">Kategori</div>
+                            <div class="spec-val" id="vKategori">-</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Lokasi</div>
+                            <div class="spec-val" id="vLokasi">-</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Waktu Perolehan</div>
+                            <div class="spec-val" id="vWaktu">-</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Penyusutan/Bln</div>
+                            <div class="spec-val" id="vSusutBulan" style="color: var(--danger);">-</div>
+                        </div>
+                    </div>
+
+                    <div class="depreciation-box">
+                        <div class="finance-header">
+                            <span class="finance-header-label">Harga Perolehan Awal</span>
+                            <span id="vHargaAwal" class="finance-header-val">-</span>
+                        </div>
+
+                        <div class="period-selector">
+                            <span style="font-size: 0.65rem; color: #94a3b8;">Lihat Nilai Pada Bulan ke-</span>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <input type="number" id="inputBulanKe" min="0" value="0" oninput="updateNilaiBukuManual(this.value)">
+                                <button class="btn-current" onclick="resetBulanKeRealtime()">SAAT INI</button>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; font-size:0.62rem; color:var(--muted); margin-top:0.4rem;">
+                            <span>Akumulasi Susut:</span>
+                            <span id="infoAkumulasiSusut" style="color: #f87171; font-weight:600;">Rp 0</span>
+                        </div>
+
+                        <div class="book-value-banner">
+                            <div class="book-value-label">Nilai Buku Aset</div>
+                            <div class="book-value-num" id="vNilaiBuku">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOMBOL KHUSUS ADMIN (EDIT & HAPUS) -->
+                <div style="margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <button id="btnEditAsset" onclick="siapkanEdit()" class="btn" style="background: #3b82f6; color: #ffffff; border: 1px solid #2563eb; font-size: 0.75rem; padding: 0.6rem 1.2rem; width: 100%; max-width: 260px; display: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                        EDIT DATA ASSETS
+                    </button>
+                    <button id="btnDeleteAsset" onclick="hapusAssetLokalDanCloud()" class="btn" style="background: #e11d48; color: #ffffff; border: 1px solid #be123c; font-size: 0.75rem; padding: 0.6rem 1.2rem; width: 100%; max-width: 260px; display: none; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);">
+                        DELETE ASSETS
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOGOUT & VERSION DITEMPATKAN DI BAWAH -->
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.2rem; text-align: center;">
+                <p style="font-size: 0.7rem; color: var(--text-main); margin: 0 0 6px 0; cursor: pointer; text-decoration: underline; letter-spacing: 0.5px; font-weight: 600;" onclick="location.reload()">
+                    LOGOUT
+                </p>
+                <p style="font-size: 0.55rem; color: rgba(100, 116, 139, 0.6); margin: 0; font-style: italic; letter-spacing: 1px; font-weight: 500;">
+                    AIAS Alpha Ver 0.1
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MAS BRO: JANGAN LUPA GANTI API INI DENGAN LINK API PRIBADI (AKHIRAN /dev atau /exec)
+        const CLOUD_API = "https://script.google.com/macros/s/AKfycbz5bw6QJov0JU9PW8K2pLaqSAqIPA8e8sGETTCCKrya--T6aCKFTldsRJ1j2z9lXkitUQ/exec";
+
+        let rawAssets = [];
+        let selectedAssetData = null;
+        let realTimeDiffMonths = 0;
+        let qrCodeInstance = null;
+        let loginAttempts = 0;
+        let currentRole = 'guest';
+        
+        let isEditMode = false;
+        let editKodeLama = "";
+        let editFotoLama = "";
+        let autoSelectKode = ""; // Variabel sakti buat Auto-Open setelah disave
+
+        function showToast(message, type = 'success') {
+            const existing = document.getElementById('toastPopup');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.id = 'toastPopup';
+            toast.className = `toast-popup ${type}`;
+            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '⚠️');
+            toast.innerHTML = `<span style="margin-right: 6px;">${icon}</span> <span style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px;">${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
+        }
+
+        function forceCloseApp() {
+            document.body.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; z-index: 99999;">
+                    <div class="glass" style="width: 320px; padding: 30px; text-align: center; border: 1px solid rgba(244, 63, 94, 0.5); box-shadow: 0 15px 35px rgba(225, 29, 72, 0.3);">
+                        <div style="font-size: 3rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(244,63,94,0.5));">🚫</div>
+                        <h2 style="color: #f43f5e; margin-bottom: 10px; font-size: 1.25rem; letter-spacing: 1.5px; font-weight: 700;">AKSES DIBLOKIR</h2>
+                        <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 24px;">User/Pass tidak valid.<br><span style="color: #64748b; font-size: 0.75rem; display: block; margin-top: 8px;">Sistem ditutup secara otomatis...</span></p>
+                    </div>
+                </div>`;
+            setTimeout(() => { window.close(); }, 3000);
+        }
+
+        const namaBulanMap = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+        function doLogin() {
+            const u = document.getElementById('user').value.trim();
+            const p = document.getElementById('pass').value.trim();
+            if (u === 'admin' && p === '123') {
+                loginAttempts = 0; setupView('admin');
+            } else if (u === 'guest' && p === 'guest') {
+                loginAttempts = 0; setupView('guest');
+            } else { 
+                loginAttempts++;
+                if (loginAttempts >= 3) forceCloseApp();
+                else showToast(`KREDENSIAL SALAH (${loginAttempts}/3)`, 'error');
+            }
+        }
+
+        function setupView(role) {
+            currentRole = role; 
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+            const badge = document.getElementById('roleBadge');
+            badge.classList.remove('hidden');
+
+            if (role === 'admin') {
+                badge.innerText = 'Authorized: Admin';
+                document.getElementById('adminTabs').classList.remove('hidden');
+                switchAdminTab('input');
+            } else {
+                badge.innerText = 'Authorized: Guest (Viewer)';
+                document.getElementById('adminTabs').classList.add('hidden');
+                document.getElementById('adminForm').classList.add('hidden');
+                document.getElementById('guestView').classList.remove('hidden');
+                loadCloudData();
+            }
+        }
+
+        function switchAdminTab(tab) {
+            const tabBtnInput = document.getElementById('tabBtnInput');
+            const tabBtnView = document.getElementById('tabBtnView');
+            const adminForm = document.getElementById('adminForm');
+            const guestView = document.getElementById('guestView');
+
+            if (tab === 'input') {
+                tabBtnInput.classList.add('active'); tabBtnView.classList.remove('active');
+                adminForm.classList.remove('hidden'); guestView.classList.add('hidden');
+            } else {
+                tabBtnView.classList.add('active'); tabBtnInput.classList.remove('active');
+                adminForm.classList.add('hidden'); guestView.classList.remove('hidden');
+                loadCloudData();
+            }
+        }
+
+        function formatRupiah(number) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number); }
+
+        function loadCloudData() {
+            const select = document.getElementById('assetSelect');
+            select.innerHTML = '<option value=""> MENGAMBIL DATA...</option>';
+            
+            // BIKIN LAYAR VIEWER KOSONG DULU BIAR DATA LAMA GAK NYANGKUT!
+            select.value = "";
+            displaySelectedAsset();
+
+            const oldScript = document.getElementById('jsonp-script');
+            if (oldScript) oldScript.remove();
+
+            let isDataLoaded = false;
+            const timeoutTimer = setTimeout(() => { if (!isDataLoaded) fallbackToLocal(); }, 7000);
+
+            window.handleSheetData = function(data) {
+                isDataLoaded = true; clearTimeout(timeoutTimer);
+                if (Array.isArray(data) && data.length > 0) {
+                    rawAssets = data;
+                    try { localStorage.setItem('ais_asd_backup', JSON.stringify(data)); } catch (e) { }
+                } else { fallbackToLocal(); return; }
+                renderAssetOptions();
+                const s = document.getElementById('jsonp-script');
+                if (s) s.remove();
+            };
+
+            function fallbackToLocal() {
+                const local = localStorage.getItem('ais_asd_backup');
+                rawAssets = local ? JSON.parse(local) : [];
+                renderAssetOptions();
+                if (rawAssets.length === 0) select.innerHTML = '<option value="">(DATABASE KOSONG)</option>';
+            }
+
+            const script = document.createElement('script');
+            script.id = 'jsonp-script';
+            script.src = `${CLOUD_API}?callback=handleSheetData&t=${Date.now()}`;
+            script.onerror = function() { clearTimeout(timeoutTimer); fallbackToLocal(); };
+            document.body.appendChild(script);
+        }
+
+        function renderAssetOptions() {
+            const sortOpt = document.getElementById('sortOption').value;
+            const searchKeyword = (document.getElementById('searchInput') ? document.getElementById('searchInput').value : '').toLowerCase().trim();
+            let displayList = [...rawAssets];
+
+            if (searchKeyword) {
+                displayList = displayList.filter(item => {
+                    const nama = (item.nama_barang || item.nama || '').toLowerCase();
+                    const kode = (item.kode_barang || item.kode || '').toLowerCase();
+                    return nama.includes(searchKeyword) || kode.includes(searchKeyword);
+                });
+            }
+
+            if (sortOpt === 'name') displayList.sort((a, b) => (a.nama_barang || a.nama || '').localeCompare(b.nama_barang || b.nama || ''));
+            else if (sortOpt === 'category') displayList.sort((a, b) => (a.kategori || '').localeCompare(b.kategori || ''));
+            else displayList.sort((a, b) => (Number(b.no) || 0) - (Number(a.no) || 0));
+
+            const select = document.getElementById('assetSelect');
+            select.innerHTML = '';
+
+            if (displayList.length === 0) {
+                select.innerHTML = '<option value="">(TIDAK ADA DATA)</option>';
+                displaySelectedAsset(); return;
+            }
+
+            select.innerHTML = '<option value="">-- PILIH ASET --</option>';
+            displayList.forEach((item, index) => {
+                const opt = document.createElement('option'); opt.value = index;
+                const kode = item.kode_barang || item.kode || '-';
+                const nama = item.nama_barang || item.nama || '-';
+                opt.textContent = `[${item.kategori || '-'}] ${kode} - ${nama}`;
+                select.appendChild(opt);
+            });
+            select.dataset.sorted = JSON.stringify(displayList);
+            
+            // JURUS AUTO-SELECT ASET YANG BARU DIEDIT/DISIMPAN
+            if (autoSelectKode !== "") {
+                const targetIdx = displayList.findIndex(item => (item.kode_barang || item.kode) === autoSelectKode);
+                if (targetIdx !== -1) {
+                    select.value = targetIdx;
+                }
+                autoSelectKode = ""; // Reset setelah dipakai
+            }
+
+            displaySelectedAsset();
+        }
+
+        function displaySelectedAsset() {
+            const select = document.getElementById('assetSelect');
+            const idx = select.value;
+            const currentList = select.dataset.sorted ? JSON.parse(select.dataset.sorted) : [];
+            const btnDel = document.getElementById('btnDeleteAsset');
+            const btnEdit = document.getElementById('btnEditAsset');
+
+            if (idx === "" || !currentList[idx]) {
+                document.getElementById('vKode').innerText = '-';
+                document.getElementById('vNama').innerText = '-';
+                document.getElementById('vKategori').innerText = '-';
+                document.getElementById('vLokasi').innerText = '-';
+                document.getElementById('vKondisi').innerText = '-';
+                document.getElementById('vWaktu').innerText = '-';
+                document.getElementById('vHargaAwal').innerText = '-';
+                document.getElementById('vSusutBulan').innerText = '-';
+                document.getElementById('vNilaiBuku').innerText = '-';
+                document.getElementById('infoAkumulasiSusut').innerText = 'Rp 0';
+                document.getElementById('vPhotoBox').innerHTML = '<span style="color:#64748b; font-size: 0.8rem; letter-spacing: 1px;">TIDAK ADA FOTO</span>';
+                document.getElementById('qrcode').innerHTML = '';
+                if(btnDel) btnDel.style.display = 'none';
+                if(btnEdit) btnEdit.style.display = 'none';
+                selectedAssetData = null; return;
+            }
+
+            const item = currentList[idx];
+            selectedAssetData = item;
+            const kode = item.kode_barang || item.kode || '-';
+            
+            document.getElementById('vKode').innerText = kode;
+            document.getElementById('vNama').innerText = item.nama_barang || item.nama || '-';
+            document.getElementById('vKategori').innerText = item.kategori || '-';
+            document.getElementById('vLokasi').innerText = item.lokasi || '-';
+            
+            const kondisiText = item.keterangan || item.kondisi || 'Berfungsi';
+            const pill = document.getElementById('vKondisi');
+            pill.innerText = kondisiText.toUpperCase();
+            if (kondisiText.toLowerCase().includes('rusak')) {
+                pill.style.color = '#f43f5e'; pill.style.background = 'rgba(244, 63, 94, 0.1)'; pill.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+            } else {
+                pill.style.color = '#10b981'; pill.style.background = 'rgba(16, 185, 129, 0.1)'; pill.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            }
+
+            // MENDAPATKAN FOTO DARI DRIVE
+            const photoBox = document.getElementById('vPhotoBox');
+            let photoUrl = item.gambar || item.foto || item.image || item.url_foto || '';
+            if (!photoUrl) {
+                for (let key in item) {
+                    if (typeof item[key] === 'string' && item[key].includes('drive.google.com')) { photoUrl = item[key]; break; }
+                }
+            }
+
+            if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim().startsWith('http')) {
+                photoUrl = photoUrl.trim(); let viewUrl = photoUrl; 
+                if (photoUrl.includes("drive.google.com")) {
+                    const fileIdMatch = photoUrl.match(/[-\w]{25,}/);
+                    if (fileIdMatch) {
+                        photoUrl = `https://drive.google.com/thumbnail?id=${fileIdMatch[0]}&sz=w800`;
+                        viewUrl = `https://drive.google.com/file/d/${fileIdMatch[0]}/view`;
+                    }
+                }
+                photoBox.innerHTML = `<img src="${photoUrl}" alt="Foto" referrerpolicy="no-referrer" loading="lazy" style="cursor: pointer; width: 100%; height: 100%; object-fit: contain; padding: 4px; box-sizing: border-box;" onclick="window.open('${viewUrl}', '_blank')" onerror="this.parentElement.innerHTML='<span style=\\'color:#64748b; font-size: 0.8rem; letter-spacing: 1px;\\'>FOTO DIBLOKIR</span>'">`;
+            } else { photoBox.innerHTML = '<span style="color:#64748b; font-size: 0.8rem; letter-spacing: 1px;">TIDAK ADA FOTO</span>'; }
+
+            const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML = '';
+            let currentUrl = window.location.href.replace('index.html', '').split('?')[0];
+            if (!currentUrl.endsWith('/')) currentUrl += '/';
+            qrCodeInstance = new QRCode(qrContainer, { text: `${currentUrl}view.html?kode=${encodeURIComponent(kode)}`, width: 114, height: 114, colorDark: "#020617", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+
+            const blnNama = item.bulan_pembelian || item.bulan || "Januari";
+            const thnBeli = parseInt(item.tahun_pembelian || item.tahun || 2026);
+            document.getElementById('vWaktu').innerText = `${blnNama} ${thnBeli}`;
+            let blnIndex = namaBulanMap.indexOf(blnNama); if (blnIndex === -1) blnIndex = 0;
+
+            const today = new Date();
+            realTimeDiffMonths = Math.max(0, (today.getFullYear() - thnBeli) * 12 + (today.getMonth() - blnIndex));
+
+            document.getElementById('vHargaAwal').innerText = formatRupiah(Number(item.harga_beli || item.harga || 0));
+            document.getElementById('vSusutBulan').innerText = `- ${formatRupiah(Number(item.susut_per_bulan || item.susut || 0))}`;
+            document.getElementById('inputBulanKe').value = realTimeDiffMonths;
+            updateNilaiBukuManual(realTimeDiffMonths);
+
+            if(btnDel) btnDel.style.display = (currentRole === 'admin') ? 'block' : 'none';
+            if(btnEdit) btnEdit.style.display = (currentRole === 'admin') ? 'block' : 'none';
+        }
+
+        function updateNilaiBukuManual(bulanKe) {
+            if (!selectedAssetData) return;
+            const bulan = Math.max(0, parseInt(bulanKe) || 0);
+            const hb = Number(selectedAssetData.harga_beli || selectedAssetData.harga || 0);
+            const sb = Number(selectedAssetData.susut_per_bulan || selectedAssetData.susut || 0);
+            document.getElementById('infoAkumulasiSusut').innerText = formatRupiah(Math.min(hb, sb * bulan));
+            document.getElementById('vNilaiBuku').innerText = formatRupiah(Math.max(0, hb - (sb * bulan)));
+        }
+
+        function resetBulanKeRealtime() { document.getElementById('inputBulanKe').value = realTimeDiffMonths; updateNilaiBukuManual(realTimeDiffMonths); }
+        function downloadQRCode() {
+            if (!selectedAssetData) return;
+            const img = document.querySelector('#qrcode img');
+            if (img && img.src) { const a = document.createElement('a'); a.href = img.src; a.download = `QR_${selectedAssetData.kode_barang || selectedAssetData.kode || 'ASET'}.png`; a.click(); }
+        }
+
+        function kompresDanUbahKeBase64(file, maxWidth = 800, quality = 0.6) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        let w = img.width, h = img.height;
+                        if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+                        const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+                    }; img.onerror = reject;
+                }; reader.onerror = reject;
+            });
+        }
+
+        function siapkanEdit() {
+            if (!selectedAssetData) return;
+            
+            isEditMode = true;
+            editKodeLama = selectedAssetData.kode_barang || selectedAssetData.kode;
+            
+            editFotoLama = selectedAssetData.gambar || selectedAssetData.foto || selectedAssetData.url_foto || '';
+            if (!editFotoLama) {
+                for (let key in selectedAssetData) {
+                    if (typeof selectedAssetData[key] === 'string' && selectedAssetData[key].includes('drive.google.com')) { editFotoLama = selectedAssetData[key]; break; }
+                }
+            }
+
+            document.getElementById('nama').value = selectedAssetData.nama_barang || selectedAssetData.nama || '';
+            document.getElementById('kode').value = editKodeLama;
+            document.getElementById('kategori').value = selectedAssetData.kategori || 'Mesin Produksi';
+            document.getElementById('lokasi').value = selectedAssetData.lokasi || '';
+            document.getElementById('hargaBeli').value = selectedAssetData.harga_beli || selectedAssetData.harga || '';
+            document.getElementById('susutBulan').value = selectedAssetData.susut_per_bulan || selectedAssetData.susut || '';
+            document.getElementById('bulanBeli').value = selectedAssetData.bulan_pembelian || selectedAssetData.bulan || 'Januari';
+            document.getElementById('tahun').value = selectedAssetData.tahun_pembelian || selectedAssetData.tahun || '2026';
+            document.getElementById('kondisi').value = selectedAssetData.kondisi || 'Berfungsi';
+            
+            switchAdminTab('input');
+            
+            document.getElementById('editModeBanner').style.display = 'block';
+            document.getElementById('btnCancelEdit').style.display = 'block';
+            const btnSave = document.getElementById('btnSave');
+            btnSave.innerText = "UPDATE DATA ASET";
+            btnSave.style.background = "#3b82f6";
+            btnSave.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.3)";
+            
+            showToast("EDIT MODE ACTIVATE. Silakan ubah data.", "info");
+        }
+
+        function batalkanEdit() {
+            isEditMode = false; editKodeLama = ""; editFotoLama = "";
+            document.getElementById('editModeBanner').style.display = 'none';
+            document.getElementById('btnCancelEdit').style.display = 'none';
+            
+            document.getElementById('nama').value = ''; document.getElementById('kode').value = '';
+            document.getElementById('hargaBeli').value = ''; document.getElementById('susutBulan').value = '';
+            document.getElementById('fotoInput').value = '';
+            
+            const btnSave = document.getElementById('btnSave');
+            btnSave.innerText = "SIMPAN KE DATABASE";
+            btnSave.style.background = ""; 
+            btnSave.style.boxShadow = "";
+            
+            showToast("DATA BERHASIL DIUPDATE.", "info");
+        }
+
+        function hapusAssetLokalDanCloud() {
+            if (!selectedAssetData) return;
+            document.getElementById('confirmText').innerHTML = `Tindakan ini tidak dapat dibatalkan.<br><br>Hapus aset: <b style="color:#ffffff;">${selectedAssetData.kode_barang || selectedAssetData.kode}</b>?`;
+            const m = document.getElementById('customConfirm'); m.style.opacity = '1'; m.style.pointerEvents = 'auto';
+        }
+        function closeConfirmModal() { const m = document.getElementById('customConfirm'); m.style.opacity = '0'; m.style.pointerEvents = 'none'; }
+
+        async function executeHapus() {
+            if (!selectedAssetData) return;
+            const kode = selectedAssetData.kode_barang || selectedAssetData.kode;
+            closeConfirmModal(); 
+            const btn = document.getElementById('btnDeleteAsset'); btn.innerText = "MENGHAPUS..."; btn.disabled = true;
+            try {
+                await fetch(CLOUD_API, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "delete", kode: kode }) });
+                localStorage.removeItem('ais_asd_backup'); showToast("ASET BERHASIL DIHAPUS", "success");
+                btn.innerText = "⚠️ HAPUS ASET INI"; btn.disabled = false;
+                document.getElementById('assetSelect').value = ""; displaySelectedAsset(); setTimeout(loadCloudData, 1000);
+            } catch (err) { showToast("GAGAL MENGHAPUS", "error"); btn.innerText = "⚠️ HAPUS ASET INI"; btn.disabled = false; }
+        }
+
+        async function saveData() {
+            const nama = document.getElementById('nama').value.trim();
+            let kode = document.getElementById('kode').value.trim();
+            if (!nama) { showToast("NAMA ASET WAJIB DIISI", "error"); return; }
+            if (!kode) { kode = `ASD/MSN/${document.getElementById('tahun').value}/PROD/018`; }
+
+            const btn = document.getElementById('btnSave'); btn.disabled = true;
+            let imageBase64 = "";
+            const fotoFile = document.getElementById('fotoInput').files[0];
+
+            if (fotoFile) {
+                btn.innerText = "MENGOMPRES FOTO...";
+                try { imageBase64 = await kompresDanUbahKeBase64(fotoFile); } catch (e) { }
+            }
+
+            btn.innerText = isEditMode ? "MENGIRIM UPDATE..." : "MENGIRIM KE DATABASE...";
+            
+            const payload = {
+                action: isEditMode ? "update" : "insert",
+                kode_lama: isEditMode ? editKodeLama : "",
+                foto_lama: isEditMode ? editFotoLama : "",
+                kategori: document.getElementById('kategori').value, kode: kode, nama: nama, 
+                lokasi: document.getElementById('lokasi').value.trim(), kondisi: document.getElementById('kondisi').value,
+                bulan_pembelian: document.getElementById('bulanBeli').value, tahun_pembelian: document.getElementById('tahun').value, 
+                harga_beli: document.getElementById('hargaBeli').value || 0, susut_per_bulan: document.getElementById('susutBulan').value || 0, 
+                image_base64: imageBase64, image_type: "image/jpeg"
+            };
+
+            try {
+                await fetch(CLOUD_API, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                showToast(isEditMode ? "DATA BERHASIL DIUPDATE!" : "ASET BERHASIL DISIMPAN", "success");
+                
+                autoSelectKode = kode; // <--- INI KUNCI SULAPNYA! Menyimpan kode aset biar nanti otomatis terbuka
+                
+                if(isEditMode) batalkanEdit(); 
+                else {
+                    document.getElementById('nama').value = ''; document.getElementById('kode').value = '';
+                    document.getElementById('hargaBeli').value = ''; document.getElementById('susutBulan').value = '';
+                    document.getElementById('fotoInput').value = '';
+                }
+                
+                localStorage.removeItem('ais_asd_backup');
+                
+                // OTOMATIS PINDAH KE TAB VIEW & LOAD DATA TERBARU
+                switchAdminTab('view'); 
+
+            } catch (err) {
+                showToast("GAGAL MENGIRIM DATA", "error");
+                btn.disabled = false; btn.innerText = isEditMode ? "UPDATE DATA ASET" : "SIMPAN KE DATABASE";
+            }
+        }
+    </script>
+</body>
+</html>
