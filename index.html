@@ -4,33 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIAS - Smart Asset System (KPSA)</title>
-    <!-- Library QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- CUSTOM CONFIRM MODAL (Tampilan Clean + Emoji) -->
-    <div id="customConfirm" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s ease;">
-        <div class="glass" style="width: 320px; padding: 24px; text-align: center; border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: 0 10px 25px rgba(225, 29, 72, 0.2);">
+    <div id="customConfirm" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(8px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s ease;">
+        <div class="glass" style="width: 320px; padding: 24px; text-align: center; border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);">
             <div style="font-size: 2.5rem; margin-bottom: 10px;">⚠️</div>
-            <h3 style="color: #f43f5e; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px;">KONFIRMASI HAPUS</h3>
-            <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5;" id="confirmText">Yakin ingin menghapus aset ini?</p>
+            <h3 style="color: #ef4444; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px;">KONFIRMASI HAPUS</h3>
+            <p style="color: #a1a1aa; font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5;" id="confirmText">Yakin ingin menghapus aset ini?</p>
             <div style="display: flex; gap: 12px; justify-content: center;">
-                <button onclick="closeConfirmModal()" class="btn" style="background: transparent; border: 1px solid #475569; color: #94a3b8; width: 50%; font-size: 0.75rem;">BATAL</button>
-                <button onclick="executeHapus()" class="btn" style="background: #e11d48; color: #ffffff; width: 50%; font-size: 0.75rem; border: 1px solid #be123c;">HAPUS ASET</button>
+                <button onclick="closeConfirmModal()" class="btn" style="background: transparent; border: 1px solid #3f3f46; color: #a1a1aa; width: 50%; font-size: 0.75rem;">BATAL</button>
+                <button onclick="executeHapus()" class="btn" style="background: #ef4444; color: #ffffff; width: 50%; font-size: 0.75rem; border: none;">HAPUS ASET</button>
             </div>
         </div>
     </div>
     
     <div class="glass">
         <div class="logo-section">
-            <h1 class="logo-text">KIAS<span style="color:var(--accent)">.</span></h1>
+            <h1 class="logo-text">KIAS<span>.</span></h1>
             <p class="sub-text">KPSA INVENTORY ASSETS SYSTEM</p>
             <div id="roleBadge" class="role-badge hidden">Authorized</div>
         </div>
         
-        <!-- LOGIN SECTION -->
         <div id="loginPage">
             <div class="input-group">
                 <input type="text" id="user" placeholder="Username (admin / guest)">
@@ -38,26 +35,29 @@
             <div class="input-group">
                 <input type="password" id="pass" placeholder="Password" onkeypress="if(event.key === 'Enter') doLogin()">
             </div>
-            <button onclick="doLogin()" class="btn">LOGIN</button>
+            <button onclick="doLogin()" class="btn btn-save">LOGIN</button>
         </div>
 
-        <!-- DASHBOARD SECTION -->
         <div id="dashboardPage" class="hidden">
-            <!-- TAB ADMIN -->
             <div id="adminTabs" class="tab-menu hidden">
                 <button class="tab-btn active" id="tabBtnInput" onclick="switchAdminTab('input')">Input Aset</button>
                 <button class="tab-btn" id="tabBtnView" onclick="switchAdminTab('view')">Lihat Database</button>
             </div>
 
-            <!-- FORM INPUT (ADMIN ONLY) -->
+            <!-- FORM INPUT / EDIT -->
             <div id="adminForm" class="hidden">
+                
+                <div id="editModeBanner" style="display: none; background: rgba(255, 179, 0, 0.1); border: 1px solid rgba(255, 179, 0, 0.4); color: #FFB300; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px; font-size: 0.8rem; font-weight: bold;">
+                    EDIT MODE
+                </div>
+
                 <div class="input-group">
                     <label>Nama Aset</label>
                     <input type="text" id="nama" placeholder="Misal: Mesin Planer">
                 </div>
                 <div class="input-group">
                     <label>Kode Serial</label>
-                    <input type="text" id="kode" placeholder="ASD/MSN/2026/PROD/018">
+                    <input type="text" id="kode" placeholder="KPSA/MSN/2026/PROD/018">
                 </div>
                 <div class="grid">
                     <div class="input-group">
@@ -74,7 +74,7 @@
                     </div>
                     <div class="input-group">
                         <label>Lokasi</label>
-                        <input type="text" id="lokasi" placeholder="Misal:  KANTOR">
+                        <input type="text" id="lokasi" placeholder="Misal: KANTOR">
                     </div>
                 </div>
 
@@ -123,12 +123,15 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>Foto Aset</label>
+                        <label>Foto Aset <span style="font-size: 0.65rem; color:#8c8c93;">(Opsional jika Edit)</span></label>
                         <input type="file" id="fotoInput" accept="image/*" style="padding: 0.55rem;">
                     </div>
                 </div>
 
-                <button id="btnSave" onclick="saveData()" class="btn btn-save">SIMPAN KE DATABASE</button>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btnCancelEdit" onclick="batalkanEdit()" class="btn" style="display: none; width: 30%;">BATAL</button>
+                    <button id="btnSave" onclick="saveData()" class="btn btn-save" style="flex: 1;">SIMPAN KE DATABASE</button>
+                </div>
             </div>
 
             <!-- GUEST / VIEWER PANEL -->
@@ -164,7 +167,6 @@
                         <span class="status-pill" id="vKondisi">NORMAL</span>
                     </div>
 
-                    <!-- FOTO & QR -->
                     <div class="media-preview-container">
                         <div class="asset-photo-box" id="vPhotoBox">
                             <span>TIDAK ADA FOTO</span>
@@ -173,7 +175,7 @@
                             <div id="qrcode"></div>
                         </div>
                     </div>
-                    <button class="btn btn-sub" onclick="downloadQRCode()" style="margin-bottom: 0.8rem; font-size: 0.62rem;">DOWNLOAD STIKER QR</button>
+                    <button class="btn btn-sub" onclick="downloadQRCode()" style="margin-bottom: 0.8rem; font-size: 0.62rem; width: 100%;">DOWNLOAD STIKER QR</button>
 
                     <div class="spec-grid">
                         <div class="spec-item">
@@ -190,11 +192,10 @@
                         </div>
                         <div class="spec-item">
                             <div class="spec-label">Penyusutan/Bln</div>
-                            <div class="spec-val" id="vSusutBulan" style="color: var(--danger);">-</div>
+                            <div class="spec-val" id="vSusutBulan" style="color: #ef4444;">-</div>
                         </div>
                     </div>
 
-                    <!-- KEUANGAN & NILAI BUKU -->
                     <div class="depreciation-box">
                         <div class="finance-header">
                             <span class="finance-header-label">Harga Perolehan Awal</span>
@@ -202,16 +203,16 @@
                         </div>
 
                         <div class="period-selector">
-                            <span style="font-size: 0.65rem; color: #94a3b8;">Lihat Nilai Pada Bulan ke-</span>
+                            <span style="font-size: 0.65rem; color: #8c8c93;">Lihat Nilai Pada Bulan ke-</span>
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <input type="number" id="inputBulanKe" min="0" value="0" oninput="updateNilaiBukuManual(this.value)">
                                 <button class="btn-current" onclick="resetBulanKeRealtime()">SAAT INI</button>
                             </div>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; font-size:0.62rem; color:var(--muted); margin-top:0.4rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--muted); margin-top:0.4rem;">
                             <span>Akumulasi Susut:</span>
-                            <span id="infoAkumulasiSusut" style="color: #f87171; font-weight:600;">Rp 0</span>
+                            <span id="infoAkumulasiSusut" style="color: #ef4444; font-weight:600;">Rp 0</span>
                         </div>
 
                         <div class="book-value-banner">
@@ -221,24 +222,31 @@
                     </div>
                 </div>
 
-                <!-- TOMBOL HAPUS KHUSUS ADMIN (Hanya muncul di Tab View) -->
-                <div style="margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center;">
-                    <button id="btnDeleteAsset" onclick="hapusAssetLokalDanCloud()" class="btn" style="background: #e11d48; color: #ffffff; border: 1px solid #be123c; font-size: 0.75rem; padding: 0.6rem 1.2rem; width: 100%; max-width: 260px; display: none; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);">
-                        HAPUS ASET INI
+                <!-- TOMBOL KHUSUS ADMIN (EDIT & HAPUS) -->
+                <div style="margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <button id="btnEditAsset" onclick="siapkanEdit()" class="btn" style="background: #FFB300; color: #000000; border: none; font-weight: 800; font-size: 0.75rem; padding: 0.8rem; width: 100%; display: none; box-shadow: 0 4px 12px rgba(255, 179, 0, 0.25);">
+                        EDIT DATA ASSETS
+                    </button>
+                    <button id="btnDeleteAsset" onclick="hapusAssetLokalDanCloud()" class="btn" style="background: #ef4444; color: #000000; border: none; font-weight: 800; font-size: 0.75rem; padding: 0.8rem; width: 100%; display: none; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);">
+                        DELETE ASSETS
                     </button>
                 </div>
             </div>
 
-            <!-- LOGOUT DITEMPATKAN DI LUAR TAB AGAR SELALU MUNCUL -->
+            <!-- LOGOUT & VERSION DITEMPATKAN DI BAWAH -->
             <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.2rem; text-align: center;">
-                <p style="font-size: 0.7rem; color: var(--muted); margin: 0; cursor: pointer; text-decoration: underline; letter-spacing: 0.5px;" onclick="location.reload()">
-                    LOGOUT DARI SISTEM
+                <p style="font-size: 0.75rem; color: var(--text); margin: 0 0 6px 0; cursor: pointer; text-decoration: underline; letter-spacing: 0.5px; font-weight: 600;" onclick="location.reload()">
+                    LOGOUT
+                </p>
+                <p style="font-size: 0.55rem; color: var(--muted); margin: 0; font-style: italic; letter-spacing: 1px; font-weight: 500;">
+                    KIAS Alpha Ver 0.1
                 </p>
             </div>
         </div>
     </div>
 
     <script>
+        // MAS BRO: JANGAN LUPA GANTI API INI DENGAN LINK API PRIBADI (AKHIRAN /dev atau /exec)
         const CLOUD_API = "https://script.google.com/macros/s/AKfycbw9lFNZAOGd4qNGRXIHkCP8GtqUZBS4yvy2q5NWV10qMtNYnEY2sl8wI8S1S-V_OA5WNg/exec";
 
         let rawAssets = [];
@@ -247,47 +255,35 @@
         let qrCodeInstance = null;
         let loginAttempts = 0;
         let currentRole = 'guest';
+        
+        let isEditMode = false;
+        let editKodeLama = "";
+        let editFotoLama = "";
+        let autoSelectKode = "";
 
         function showToast(message, type = 'success') {
             const existing = document.getElementById('toastPopup');
             if (existing) existing.remove();
-
             const toast = document.createElement('div');
             toast.id = 'toastPopup';
             toast.className = `toast-popup ${type}`;
-            
-            // Icon ditambahkan kembali agar tidak "botak"
-            const icon = type === 'success' ? '✅' : '⚠️';
+            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '⚠️');
             toast.innerHTML = `<span style="margin-right: 6px;">${icon}</span> <span style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px;">${message}</span>`;
-            
             document.body.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
         }
 
         function forceCloseApp() {
-            // Icon Blokir dikembalikan
             document.body.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; z-index: 99999;">
-                    <div class="glass" style="width: 320px; padding: 30px; text-align: center; border: 1px solid rgba(244, 63, 94, 0.5); box-shadow: 0 15px 35px rgba(225, 29, 72, 0.3); animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
-                        <div style="font-size: 3rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(244,63,94,0.5));">🚫</div>
-                        <h2 style="color: #f43f5e; margin-bottom: 10px; font-size: 1.25rem; letter-spacing: 1.5px; font-weight: 700;">AKSES DIBLOKIR</h2>
-                        <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5;">Kredensial tidak valid.<br><span style="color: #64748b; font-size: 0.75rem; display: block; margin-top: 8px;">Sistem ditutup secara otomatis...</span></p>
-                        
-                        <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                            <div style="width: 100%; height: 100%; background: #e11d48; animation: shrinkBar 3s linear forwards;"></div>
-                        </div>
+                <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #09090b; display: flex; justify-content: center; align-items: center; z-index: 99999;">
+                    <div style="background: #121214; border: 1px solid #27272a; width: 320px; padding: 30px; text-align: center; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+                        <div style="font-size: 3rem; margin-bottom: 12px;">🚫</div>
+                        <h2 style="color: #ef4444; margin-bottom: 10px; font-size: 1.25rem; letter-spacing: 1.5px; font-weight: 800; text-transform: uppercase;">Akses Diblokir</h2>
+                        <p style="color: #a1a1aa; font-size: 0.85rem; margin-bottom: 24px; font-weight: 500;">Batas percobaan gagal.<br><span style="color: #71717a; font-size: 0.75rem; display: block; margin-top: 8px;">Mematikan sesi...</span></p>
                     </div>
-                </div>
-                <style>
-                    @keyframes popIn { from { opacity: 0; transform: scale(0.8) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-                    @keyframes shrinkBar { from { width: 100%; } to { width: 0%; } }
-                </style>
-            `;
-            setTimeout(() => { window.close(); }, 3000);
+                </div>`;
+            setTimeout(() => { window.location.href = "about:blank"; }, 2500);
         }
 
         const namaBulanMap = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -295,20 +291,14 @@
         function doLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
-            
             if (u === 'admin' && p === '123') {
-                loginAttempts = 0;
-                setupView('admin');
+                loginAttempts = 0; setupView('admin');
             } else if (u === 'guest' && p === 'guest') {
-                loginAttempts = 0;
-                setupView('guest');
+                loginAttempts = 0; setupView('guest');
             } else { 
                 loginAttempts++;
-                if (loginAttempts >= 3) {
-                    forceCloseApp();
-                } else {
-                    showToast(`KREDENSIAL SALAH (${loginAttempts}/3)`, 'error');
-                }
+                if (loginAttempts >= 3) forceCloseApp();
+                else showToast(`KREDENSIAL SALAH (${loginAttempts}/3)`, 'error');
             }
         }
 
@@ -316,7 +306,6 @@
             currentRole = role; 
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('dashboardPage').classList.remove('hidden');
-
             const badge = document.getElementById('roleBadge');
             badge.classList.remove('hidden');
 
@@ -340,51 +329,48 @@
             const guestView = document.getElementById('guestView');
 
             if (tab === 'input') {
-                tabBtnInput.classList.add('active');
+                tabBtnInput.classList.add('active'); 
                 tabBtnView.classList.remove('active');
-                adminForm.classList.remove('hidden');
+                adminForm.classList.remove('hidden'); 
                 guestView.classList.add('hidden');
+                
+                // Pastikan tombol selalu aktif saat masuk tab input
+                const btnSave = document.getElementById('btnSave');
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.innerText = isEditMode ? "UPDATE DATA ASET" : "SIMPAN KE DATABASE";
+                }
+
             } else {
-                tabBtnView.classList.add('active');
+                tabBtnView.classList.add('active'); 
                 tabBtnInput.classList.remove('active');
-                adminForm.classList.add('hidden');
+                adminForm.classList.add('hidden'); 
                 guestView.classList.remove('hidden');
                 loadCloudData();
             }
         }
 
-        function formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-        }
+        function formatRupiah(number) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number); }
 
         function loadCloudData() {
             const select = document.getElementById('assetSelect');
             select.innerHTML = '<option value=""> MENGAMBIL DATA...</option>';
             
+            select.value = "";
+            displaySelectedAsset();
+
             const oldScript = document.getElementById('jsonp-script');
             if (oldScript) oldScript.remove();
 
             let isDataLoaded = false;
-            const timeoutTimer = setTimeout(() => {
-                if (!isDataLoaded) {
-                    fallbackToLocal();
-                }
-            }, 7000);
+            const timeoutTimer = setTimeout(() => { if (!isDataLoaded) fallbackToLocal(); }, 7000);
 
             window.handleSheetData = function(data) {
-                isDataLoaded = true;
-                clearTimeout(timeoutTimer);
-
+                isDataLoaded = true; clearTimeout(timeoutTimer);
                 if (Array.isArray(data) && data.length > 0) {
                     rawAssets = data;
-                    try {
-                        localStorage.setItem('ais_asd_backup', JSON.stringify(data));
-                    } catch (e) { }
-                } else {
-                    fallbackToLocal();
-                    return;
-                }
-
+                    try { localStorage.setItem('ais_asd_backup', JSON.stringify(data)); } catch (e) { }
+                } else { fallbackToLocal(); return; }
                 renderAssetOptions();
                 const s = document.getElementById('jsonp-script');
                 if (s) s.remove();
@@ -394,25 +380,19 @@
                 const local = localStorage.getItem('ais_asd_backup');
                 rawAssets = local ? JSON.parse(local) : [];
                 renderAssetOptions();
-                if (rawAssets.length === 0) {
-                    select.innerHTML = '<option value="">(DATABASE KOSONG)</option>';
-                }
+                if (rawAssets.length === 0) select.innerHTML = '<option value="">(DATABASE KOSONG)</option>';
             }
 
             const script = document.createElement('script');
             script.id = 'jsonp-script';
             script.src = `${CLOUD_API}?callback=handleSheetData&t=${Date.now()}`;
-            script.onerror = function() {
-                clearTimeout(timeoutTimer);
-                fallbackToLocal();
-            };
+            script.onerror = function() { clearTimeout(timeoutTimer); fallbackToLocal(); };
             document.body.appendChild(script);
         }
 
         function renderAssetOptions() {
             const sortOpt = document.getElementById('sortOption').value;
             const searchKeyword = (document.getElementById('searchInput') ? document.getElementById('searchInput').value : '').toLowerCase().trim();
-            
             let displayList = [...rawAssets];
 
             if (searchKeyword) {
@@ -423,35 +403,36 @@
                 });
             }
 
-            if (sortOpt === 'name') {
-                displayList.sort((a, b) => (a.nama_barang || a.nama || '').localeCompare(b.nama_barang || b.nama || ''));
-            } else if (sortOpt === 'category') {
-                displayList.sort((a, b) => (a.kategori || '').localeCompare(b.kategori || ''));
-            } else {
-                displayList.sort((a, b) => (Number(b.no) || 0) - (Number(a.no) || 0));
-            }
+            if (sortOpt === 'name') displayList.sort((a, b) => (a.nama_barang || a.nama || '').localeCompare(b.nama_barang || b.nama || ''));
+            else if (sortOpt === 'category') displayList.sort((a, b) => (a.kategori || '').localeCompare(b.kategori || ''));
+            else displayList.sort((a, b) => (Number(b.no) || 0) - (Number(a.no) || 0));
 
             const select = document.getElementById('assetSelect');
             select.innerHTML = '';
 
             if (displayList.length === 0) {
                 select.innerHTML = '<option value="">(TIDAK ADA DATA)</option>';
-                displaySelectedAsset();
-                return;
+                displaySelectedAsset(); return;
             }
 
             select.innerHTML = '<option value="">-- PILIH ASET --</option>';
             displayList.forEach((item, index) => {
-                const opt = document.createElement('option');
-                opt.value = index;
+                const opt = document.createElement('option'); opt.value = index;
                 const kode = item.kode_barang || item.kode || '-';
                 const nama = item.nama_barang || item.nama || '-';
-                const kat = item.kategori || '-';
-                opt.textContent = `[${kat}] ${kode} - ${nama}`;
+                opt.textContent = `[${item.kategori || '-'}] ${kode} - ${nama}`;
                 select.appendChild(opt);
             });
-
             select.dataset.sorted = JSON.stringify(displayList);
+            
+            if (autoSelectKode !== "") {
+                const targetIdx = displayList.findIndex(item => (item.kode_barang || item.kode) === autoSelectKode);
+                if (targetIdx !== -1) {
+                    select.value = targetIdx;
+                }
+                autoSelectKode = ""; 
+            }
+
             displaySelectedAsset();
         }
 
@@ -460,6 +441,7 @@
             const idx = select.value;
             const currentList = select.dataset.sorted ? JSON.parse(select.dataset.sorted) : [];
             const btnDel = document.getElementById('btnDeleteAsset');
+            const btnEdit = document.getElementById('btnEditAsset');
 
             if (idx === "" || !currentList[idx]) {
                 document.getElementById('vKode').innerText = '-';
@@ -475,14 +457,14 @@
                 document.getElementById('vPhotoBox').innerHTML = '<span style="color:#64748b; font-size: 0.8rem; letter-spacing: 1px;">TIDAK ADA FOTO</span>';
                 document.getElementById('qrcode').innerHTML = '';
                 if(btnDel) btnDel.style.display = 'none';
-                selectedAssetData = null;
-                return;
+                if(btnEdit) btnEdit.style.display = 'none';
+                selectedAssetData = null; return;
             }
 
             const item = currentList[idx];
             selectedAssetData = item;
-
             const kode = item.kode_barang || item.kode || '-';
+            
             document.getElementById('vKode').innerText = kode;
             document.getElementById('vNama').innerText = item.nama_barang || item.nama || '-';
             document.getElementById('vKategori').innerText = item.kategori || '-';
@@ -491,252 +473,213 @@
             const kondisiText = item.keterangan || item.kondisi || 'Berfungsi';
             const pill = document.getElementById('vKondisi');
             pill.innerText = kondisiText.toUpperCase();
-            
             if (kondisiText.toLowerCase().includes('rusak')) {
-                pill.style.color = '#f43f5e';
-                pill.style.background = 'rgba(244, 63, 94, 0.1)';
-                pill.style.borderColor = 'rgba(244, 63, 94, 0.3)';
+                pill.style.color = '#ef4444'; pill.style.background = 'rgba(239, 68, 68, 0.1)'; pill.style.borderColor = 'rgba(239, 68, 68, 0.2)';
             } else {
-                pill.style.color = '#10b981';
-                pill.style.background = 'rgba(16, 185, 129, 0.1)';
-                pill.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                pill.style.color = '#22c55e'; pill.style.background = 'rgba(34, 197, 94, 0.1)'; pill.style.borderColor = 'rgba(34, 197, 94, 0.2)';
             }
 
-            // TAMPILKAN FOTO DARI DRIVE
             const photoBox = document.getElementById('vPhotoBox');
             let photoUrl = item.gambar || item.foto || item.image || item.url_foto || '';
-            
             if (!photoUrl) {
                 for (let key in item) {
-                    if (typeof item[key] === 'string' && item[key].includes('drive.google.com')) {
-                        photoUrl = item[key];
-                        break;
-                    }
+                    if (typeof item[key] === 'string' && item[key].includes('drive.google.com')) { photoUrl = item[key]; break; }
                 }
             }
 
             if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim().startsWith('http')) {
-                photoUrl = photoUrl.trim();
-                let viewUrl = photoUrl; 
-                
+                photoUrl = photoUrl.trim(); let viewUrl = photoUrl; 
                 if (photoUrl.includes("drive.google.com")) {
                     const fileIdMatch = photoUrl.match(/[-\w]{25,}/);
                     if (fileIdMatch) {
-                        const fileId = fileIdMatch[0];
-                        photoUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
-                        viewUrl = `https://drive.google.com/file/d/${fileId}/view`;
+                        photoUrl = `https://drive.google.com/thumbnail?id=${fileIdMatch[0]}&sz=w800`;
+                        viewUrl = `https://drive.google.com/file/d/${fileIdMatch[0]}/view`;
                     }
                 }
+                photoBox.innerHTML = `<img src="${photoUrl}" alt="Foto" referrerpolicy="no-referrer" loading="lazy" style="cursor: pointer; width: 100%; height: 100%; object-fit: contain; padding: 4px; box-sizing: border-box;" onclick="window.open('${viewUrl}', '_blank')" onerror="this.parentElement.innerHTML='<span style=\\'color:#64748b; font-size: 0.8rem; letter-spacing: 1px;\\'>FOTO DIBLOKIR</span>'">`;
+            } else { photoBox.innerHTML = '<span style="color:#64748b; font-size: 0.8rem; letter-spacing: 1px;">TIDAK ADA FOTO</span>'; }
 
-                photoBox.innerHTML = `
-                    <img src="${photoUrl}" 
-                         alt="Foto Aset" 
-                         referrerpolicy="no-referrer"
-                         loading="lazy"
-                         style="cursor: pointer; width: 100%; height: 100%; object-fit: contain; padding: 4px; box-sizing: border-box;" 
-                         onclick="window.open('${viewUrl}', '_blank')"
-                         onerror="this.parentElement.innerHTML='<span style=\\'color:#64748b; font-size: 0.8rem; letter-spacing: 1px;\\'>FOTO DIBLOKIR</span>'">
-                `;
-            } else {
-                photoBox.innerHTML = '<span style="color:#64748b; font-size: 0.8rem; letter-spacing: 1px;">TIDAK ADA FOTO</span>';
-            }
-
-            // QR CODE
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-            let currentUrl = window.location.href;
-            currentUrl = currentUrl.replace('index.html', '').split('?')[0];
-            if (!currentUrl.endsWith('/')) { currentUrl += '/'; }
-            
-            const targetQrLink = `${currentUrl}view.html?kode=${encodeURIComponent(kode)}`;
-
-            qrCodeInstance = new QRCode(qrContainer, {
-                text: targetQrLink,
-                width: 114,
-                height: 114,
-                colorDark: "#020617",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML = '';
+            let currentUrl = window.location.href.replace('index.html', '').split('?')[0];
+            if (!currentUrl.endsWith('/')) currentUrl += '/';
+            qrCodeInstance = new QRCode(qrContainer, { text: `${currentUrl}view.html?kode=${encodeURIComponent(kode)}`, width: 114, height: 114, colorDark: "#09090b", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
 
             const blnNama = item.bulan_pembelian || item.bulan || "Januari";
             const thnBeli = parseInt(item.tahun_pembelian || item.tahun || 2026);
             document.getElementById('vWaktu').innerText = `${blnNama} ${thnBeli}`;
-
-            let blnIndex = namaBulanMap.indexOf(blnNama);
-            if (blnIndex === -1) blnIndex = 0;
+            let blnIndex = namaBulanMap.indexOf(blnNama); if (blnIndex === -1) blnIndex = 0;
 
             const today = new Date();
-            const currYear = today.getFullYear();
-            const currMonth = today.getMonth();
+            realTimeDiffMonths = Math.max(0, (today.getFullYear() - thnBeli) * 12 + (today.getMonth() - blnIndex));
 
-            realTimeDiffMonths = (currYear - thnBeli) * 12 + (currMonth - blnIndex);
-            if (realTimeDiffMonths < 0) realTimeDiffMonths = 0;
-
-            const hargaBeli = Number(item.harga_beli || item.harga || 0);
-            const susutPerBulan = Number(item.susut_per_bulan || item.susut || 0);
-
-            document.getElementById('vHargaAwal').innerText = formatRupiah(hargaBeli);
-            document.getElementById('vSusutBulan').innerText = `- ${formatRupiah(susutPerBulan)}`;
-
+            document.getElementById('vHargaAwal').innerText = formatRupiah(Number(item.harga_beli || item.harga || 0));
+            document.getElementById('vSusutBulan').innerText = `- ${formatRupiah(Number(item.susut_per_bulan || item.susut || 0))}`;
             document.getElementById('inputBulanKe').value = realTimeDiffMonths;
             updateNilaiBukuManual(realTimeDiffMonths);
 
             if(btnDel) btnDel.style.display = (currentRole === 'admin') ? 'block' : 'none';
+            if(btnEdit) btnEdit.style.display = (currentRole === 'admin') ? 'block' : 'none';
         }
 
         function updateNilaiBukuManual(bulanKe) {
             if (!selectedAssetData) return;
             const bulan = Math.max(0, parseInt(bulanKe) || 0);
-            const hargaBeli = Number(selectedAssetData.harga_beli || selectedAssetData.harga || 0);
-            const susutPerBulan = Number(selectedAssetData.susut_per_bulan || selectedAssetData.susut || 0);
-            const totalAkumulasiSusut = Math.min(hargaBeli, susutPerBulan * bulan);
-            const nilaiBukuSaatIni = Math.max(0, hargaBeli - (susutPerBulan * bulan));
-            document.getElementById('infoAkumulasiSusut').innerText = formatRupiah(totalAkumulasiSusut);
-            document.getElementById('vNilaiBuku').innerText = formatRupiah(nilaiBukuSaatIni);
+            const hb = Number(selectedAssetData.harga_beli || selectedAssetData.harga || 0);
+            const sb = Number(selectedAssetData.susut_per_bulan || selectedAssetData.susut || 0);
+            document.getElementById('infoAkumulasiSusut').innerText = formatRupiah(Math.min(hb, sb * bulan));
+            document.getElementById('vNilaiBuku').innerText = formatRupiah(Math.max(0, hb - (sb * bulan)));
         }
 
-        function resetBulanKeRealtime() {
-            document.getElementById('inputBulanKe').value = realTimeDiffMonths;
-            updateNilaiBukuManual(realTimeDiffMonths);
-        }
-
+        function resetBulanKeRealtime() { document.getElementById('inputBulanKe').value = realTimeDiffMonths; updateNilaiBukuManual(realTimeDiffMonths); }
+        
         function downloadQRCode() {
             if (!selectedAssetData) return;
             const img = document.querySelector('#qrcode img');
-            if (img && img.src) {
-                const a = document.createElement('a');
-                a.href = img.src;
-                a.download = `QR_${selectedAssetData.kode_barang || selectedAssetData.kode || 'ASET'}.png`;
-                a.click();
-            }
+            if (img && img.src) { const a = document.createElement('a'); a.href = img.src; a.download = `QR_${selectedAssetData.kode_barang || selectedAssetData.kode || 'ASET'}.png`; a.click(); }
         }
 
         function kompresDanUbahKeBase64(file, maxWidth = 800, quality = 0.6) {
             return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
                     img.onload = () => {
-                        let width = img.width;
-                        let height = img.height;
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        }
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-                        const rawBase64 = compressedBase64.split(',')[1];
-                        resolve(rawBase64);
-                    };
-                    img.onerror = (err) => reject(err);
-                };
-                reader.onerror = (err) => reject(err);
+                        let w = img.width, h = img.height;
+                        if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+                        const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+                    }; img.onerror = reject;
+                }; reader.onerror = reject;
             });
+        }
+
+        function siapkanEdit() {
+            if (!selectedAssetData) return;
+            
+            isEditMode = true;
+            editKodeLama = selectedAssetData.kode_barang || selectedAssetData.kode;
+            
+            editFotoLama = selectedAssetData.gambar || selectedAssetData.foto || selectedAssetData.url_foto || '';
+            if (!editFotoLama) {
+                for (let key in selectedAssetData) {
+                    if (typeof selectedAssetData[key] === 'string' && selectedAssetData[key].includes('drive.google.com')) { editFotoLama = selectedAssetData[key]; break; }
+                }
+            }
+
+            document.getElementById('nama').value = selectedAssetData.nama_barang || selectedAssetData.nama || '';
+            document.getElementById('kode').value = editKodeLama;
+            document.getElementById('kategori').value = selectedAssetData.kategori || 'Mesin Produksi';
+            document.getElementById('lokasi').value = selectedAssetData.lokasi || '';
+            document.getElementById('hargaBeli').value = selectedAssetData.harga_beli || selectedAssetData.harga || '';
+            document.getElementById('susutBulan').value = selectedAssetData.susut_per_bulan || selectedAssetData.susut || '';
+            document.getElementById('bulanBeli').value = selectedAssetData.bulan_pembelian || selectedAssetData.bulan || 'Januari';
+            document.getElementById('tahun').value = selectedAssetData.tahun_pembelian || selectedAssetData.tahun || '2026';
+            document.getElementById('kondisi').value = selectedAssetData.kondisi || 'Berfungsi';
+            
+            switchAdminTab('input');
+            
+            document.getElementById('editModeBanner').style.display = 'block';
+            document.getElementById('btnCancelEdit').style.display = 'block';
+            const btnSave = document.getElementById('btnSave');
+            btnSave.innerText = "UPDATE DATA ASET";
+            
+            showToast("EDIT MODE ACTIVATE. Silakan ubah data.", "info");
+        }
+
+        function batalkanEdit() {
+            isEditMode = false; editKodeLama = ""; editFotoLama = "";
+            document.getElementById('editModeBanner').style.display = 'none';
+            document.getElementById('btnCancelEdit').style.display = 'none';
+            
+            document.getElementById('nama').value = ''; document.getElementById('kode').value = '';
+            document.getElementById('hargaBeli').value = ''; document.getElementById('susutBulan').value = '';
+            document.getElementById('fotoInput').value = '';
+            
+            const btnSave = document.getElementById('btnSave');
+            btnSave.innerText = "SIMPAN KE DATABASE";
+            
+            showToast("DATA BERHASIL DIUPDATE.", "info");
         }
 
         function hapusAssetLokalDanCloud() {
             if (!selectedAssetData) return;
-            const kode = selectedAssetData.kode_barang || selectedAssetData.kode;
-            document.getElementById('confirmText').innerHTML = `Tindakan ini tidak dapat dibatalkan.<br><br>Hapus aset: <b style="color:#ffffff;">${kode}</b>?`;
-            const modal = document.getElementById('customConfirm');
-            modal.style.opacity = '1';
-            modal.style.pointerEvents = 'auto';
+            document.getElementById('confirmText').innerHTML = `Tindakan ini tidak dapat dibatalkan.<br><br>Hapus aset: <b style="color:#ffffff;">${selectedAssetData.kode_barang || selectedAssetData.kode}</b>?`;
+            const m = document.getElementById('customConfirm'); m.style.opacity = '1'; m.style.pointerEvents = 'auto';
         }
 
-        function closeConfirmModal() {
-            const modal = document.getElementById('customConfirm');
-            modal.style.opacity = '0';
-            modal.style.pointerEvents = 'none';
+        function closeConfirmModal() { 
+            const m = document.getElementById('customConfirm'); m.style.opacity = '0'; m.style.pointerEvents = 'none'; 
         }
 
         async function executeHapus() {
             if (!selectedAssetData) return;
             const kode = selectedAssetData.kode_barang || selectedAssetData.kode;
             closeConfirmModal(); 
-            const btn = document.getElementById('btnDeleteAsset');
-            btn.innerText = "MENGHAPUS DARI DATABASE...";
-            btn.disabled = true;
+            const btn = document.getElementById('btnDeleteAsset'); btn.innerText = "MENGHAPUS..."; btn.disabled = true;
             try {
-                await fetch(CLOUD_API, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "delete", kode: kode })
-                });
-                localStorage.removeItem('ais_asd_backup');
-                showToast("ASET BERHASIL DIHAPUS", "success");
-                btn.innerText = "HAPUS ASET INI";
-                btn.disabled = false;
-                document.getElementById('assetSelect').value = "";
-                displaySelectedAsset(); 
-                setTimeout(() => { loadCloudData(); }, 1000);
-            } catch (err) {
-                showToast("GAGAL MENGHAPUS: " + err.message.toUpperCase(), "error");
-                btn.innerText = "HAPUS ASET INI";
-                btn.disabled = false;
+                const payload = { action: "delete", kode: kode };
+                await fetch(CLOUD_API, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                localStorage.removeItem('ais_asd_backup'); showToast("ASET BERHASIL DIHAPUS", "success");
+                btn.innerText = "DELETE ASSETS"; btn.disabled = false;
+                document.getElementById('assetSelect').value = ""; displaySelectedAsset(); setTimeout(loadCloudData, 1000);
+            } catch (err) { 
+                showToast("GAGAL MENGHAPUS", "error"); btn.innerText = "DELETE ASSETS"; btn.disabled = false; 
             }
         }
 
         async function saveData() {
             const nama = document.getElementById('nama').value.trim();
             let kode = document.getElementById('kode').value.trim();
-            const kategori = document.getElementById('kategori').value;
-            const lokasi = document.getElementById('lokasi').value.trim();
-            const hargaBeli = document.getElementById('hargaBeli').value || 0;
-            const susutBulan = document.getElementById('susutBulan').value || 0;
-            const bulanNama = document.getElementById('bulanBeli').value;
-            const tahun = document.getElementById('tahun').value;
-            const kondisi = document.getElementById('kondisi').value;
-            const fotoInput = document.getElementById('fotoInput');
-            const fotoFile = fotoInput.files[0];
-
             if (!nama) { showToast("NAMA ASET WAJIB DIISI", "error"); return; }
-            if (!kode) { kode = `ASD/MSN/${tahun}/PROD/018`; }
+            if (!kode) { kode = `KPSA/MSN/${document.getElementById('tahun').value}/PROD/018`; }
 
-            const btn = document.getElementById('btnSave');
+            const btn = document.getElementById('btnSave'); 
             btn.disabled = true;
+            
             let imageBase64 = "";
+            const fotoFile = document.getElementById('fotoInput').files[0];
 
             if (fotoFile) {
                 btn.innerText = "MENGOMPRES FOTO...";
-                try {
-                    imageBase64 = await kompresDanUbahKeBase64(fotoFile);
-                } catch (e) { }
+                try { imageBase64 = await kompresDanUbahKeBase64(fotoFile); } catch (e) { }
             }
 
-            btn.innerText = "MENGIRIM KE DATABASE...";
+            btn.innerText = isEditMode ? "MENGIRIM UPDATE..." : "MENGIRIM KE DATABASE...";
+            
             const payload = {
-                kategori: kategori, kode: kode, nama: nama, lokasi: lokasi, kondisi: kondisi,
-                bulan_pembelian: bulanNama, tahun_pembelian: tahun, harga_beli: hargaBeli,
-                susut_per_bulan: susutBulan, image_base64: imageBase64, image_type: "image/jpeg"
+                action: isEditMode ? "update" : "insert",
+                kode_lama: isEditMode ? editKodeLama : "",
+                foto_lama: isEditMode ? editFotoLama : "",
+                kategori: document.getElementById('kategori').value, kode: kode, nama: nama, 
+                lokasi: document.getElementById('lokasi').value.trim(), kondisi: document.getElementById('kondisi').value,
+                bulan_pembelian: document.getElementById('bulanBeli').value, tahun_pembelian: document.getElementById('tahun').value, 
+                harga_beli: document.getElementById('hargaBeli').value || 0, susut_per_bulan: document.getElementById('susutBulan').value || 0, 
+                image_base64: imageBase64, image_type: "image/jpeg"
             };
 
             try {
-                await fetch(CLOUD_API, {
-                    method: 'POST', mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
-                showToast("ASET BERHASIL DISIMPAN", "success");
-                document.getElementById('nama').value = '';
-                document.getElementById('kode').value = '';
-                document.getElementById('hargaBeli').value = '';
-                document.getElementById('susutBulan').value = '';
-                fotoInput.value = '';
+                await fetch(CLOUD_API, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                
+                showToast(isEditMode ? "DATA BERHASIL DIUPDATE!" : "ASET BERHASIL DISIMPAN", "success");
+                
+                if(isEditMode) {
+                    batalkanEdit(); 
+                } else {
+                    document.getElementById('nama').value = ''; 
+                    document.getElementById('kode').value = '';
+                    document.getElementById('hargaBeli').value = ''; 
+                    document.getElementById('susutBulan').value = '';
+                    document.getElementById('fotoInput').value = '';
+                }
+                
                 localStorage.removeItem('ais_asd_backup');
-                setTimeout(loadCloudData, 2000);
+                
             } catch (err) {
-                showToast("GAGAL MENYIMPAN: " + err.message.toUpperCase(), "error");
+                showToast("GAGAL MENGIRIM DATA", "error");
             } finally {
-                btn.disabled = false;
-                btn.innerText = "SIMPAN KE DATABASE";
+                btn.disabled = false; 
+                btn.innerText = isEditMode ? "UPDATE DATA ASET" : "SIMPAN KE DATABASE";
             }
         }
     </script>
