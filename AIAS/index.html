@@ -395,6 +395,7 @@
             const searchKeyword = (document.getElementById('searchInput') ? document.getElementById('searchInput').value : '').toLowerCase().trim();
             let displayList = [...rawAssets];
 
+            // 1. Proses Filter Pencarian
             if (searchKeyword) {
                 displayList = displayList.filter(item => {
                     const nama = (item.nama_barang || item.nama || '').toLowerCase();
@@ -403,6 +404,7 @@
                 });
             }
 
+            // 2. Proses Sorting
             if (sortOpt === 'name') displayList.sort((a, b) => (a.nama_barang || a.nama || '').localeCompare(b.nama_barang || b.nama || ''));
             else if (sortOpt === 'category') displayList.sort((a, b) => (a.kategori || '').localeCompare(b.kategori || ''));
             else displayList.sort((a, b) => (Number(b.no) || 0) - (Number(a.no) || 0));
@@ -410,11 +412,13 @@
             const select = document.getElementById('assetSelect');
             select.innerHTML = '';
 
+            // Jika Data Kosong
             if (displayList.length === 0) {
                 select.innerHTML = '<option value="">(TIDAK ADA DATA)</option>';
                 displaySelectedAsset(); return;
             }
 
+            // Memasukkan Hasil Filter ke Dropdown
             select.innerHTML = '<option value="">-- PILIH ASET --</option>';
             displayList.forEach((item, index) => {
                 const opt = document.createElement('option'); opt.value = index;
@@ -425,14 +429,21 @@
             });
             select.dataset.sorted = JSON.stringify(displayList);
             
+            // 3. 👇 JURUS SAKTI AUTO-SELECT 👇
             if (autoSelectKode !== "") {
+                // A. Auto-select setelah Simpan/Update data
                 const targetIdx = displayList.findIndex(item => (item.kode_barang || item.kode) === autoSelectKode);
                 if (targetIdx !== -1) {
                     select.value = targetIdx;
                 }
                 autoSelectKode = ""; 
+            } else if (searchKeyword !== "") {
+                // B. Auto-select saat sedang mengetik pencarian!
+                // Langsung tampilkan data urutan pertama (index 0) yang cocok
+                select.value = 0; 
             }
 
+            // Jalankan fungsi untuk merender tampilan card di bawah
             displaySelectedAsset();
         }
 
