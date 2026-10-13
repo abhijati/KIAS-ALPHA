@@ -291,17 +291,55 @@
 
         const namaBulanMap = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-        function doLogin() {
+        async function doLogin() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
-            if (u === 'admin' && p === '123') {
-                loginAttempts = 0; setupView('admin');
-            } else if (u === 'guest' && p === 'guest') {
-                loginAttempts = 0; setupView('guest');
-            } else { 
-                loginAttempts++;
-                if (loginAttempts >= 3) forceCloseApp();
-                else showToast(`KREDENSIAL SALAH (${loginAttempts}/3)`, 'error');
+            
+            // Ambil elemen tombol untuk animasi loading
+            const btnList = document.querySelectorAll('#loginPage .btn-save');
+            const btn = btnList.length > 0 ? btnList[0] : document.querySelector('#loginPage button');
+            
+            if (!u || !p) {
+                showToast("USERNAME & PASSWORD WAJIB DIISI", "error");
+                return;
+            }
+
+            // Ubah tombol jadi loading
+            const originalText = btn.innerText;
+            btn.innerText = "MEMVERIFIKASI...";
+            btn.disabled = true;
+
+            const payload = {
+                action: "login",
+                username: u,
+                password: p
+            };
+
+            try {
+                // Kirim request ke Google Apps Script
+                const response = await fetch(CLOUD_API, { 
+                    method: 'POST', 
+                    // Kita hilangkan 'no-cors' agar browser bisa membaca balasan dari server
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    loginAttempts = 0; 
+                    setupView(result.role); // Masuk sebagai admin atau guest dari balasan server
+                } else {
+                    loginAttempts++;
+                    if (loginAttempts >= 3) forceCloseApp();
+                    else showToast(`KREDENSIAL SALAH (${loginAttempts}/3)`, 'error');
+                }
+            } catch (err) {
+                showToast("GAGAL MENGHUBUNGI SERVER", "error");
+            } finally {
+                // Kembalikan tombol seperti semula
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
