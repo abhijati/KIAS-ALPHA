@@ -249,7 +249,7 @@
     </div>
 
     <script>
-        // MAS BRO: JANGAN LUPA GANTI API INI DENGAN LINK API PRIBADI (AKHIRAN /dev atau /exec)
+        // GOOGLE API
         const CLOUD_API = "https://script.google.com/macros/s/AKfycbxWYWChlUCNDoHtqbydwtF1xZYAG83OyumRTrwSr7Ohe2Gv5z-yBjHodvd3SAfKfkqaKw/exec";
         
         let rawAssets = [];
@@ -295,7 +295,7 @@
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
             
-            // Ambil elemen tombol untuk animasi loading
+            // ELEMENT LOADING BUTTON
             const btnList = document.querySelectorAll('#loginPage .btn-save');
             const btn = btnList.length > 0 ? btnList[0] : document.querySelector('#loginPage button');
             
@@ -304,7 +304,7 @@
                 return;
             }
 
-            // Ubah tombol jadi loading
+            // LOADING BUTTON
             const originalText = btn.innerText;
             btn.innerText = "MEMVERIFIKASI...";
             btn.disabled = true;
@@ -316,7 +316,7 @@
             };
 
             try {
-                // Kirim request ke Google Apps Script
+                // SENDING REQ GOOGLE APP SCRIPT
                 const response = await fetch(CLOUD_API, { 
                     method: 'POST', 
                     // Kita hilangkan 'no-cors' agar browser bisa membaca balasan dari server
@@ -337,7 +337,7 @@
             } catch (err) {
                 showToast("GAGAL MENGHUBUNGI SERVER", "error");
             } finally {
-                // Kembalikan tombol seperti semula
+                // tombol seperti semula
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
@@ -470,7 +470,7 @@
             });
             select.dataset.sorted = JSON.stringify(displayList);
             
-            // 3. 👇 JURUS SAKTI AUTO-SELECT 👇
+            // 3. AUTO-SELECT
             if (autoSelectKode !== "") {
                 // A. Auto-select setelah Simpan/Update data
                 const targetIdx = displayList.findIndex(item => (item.kode_barang || item.kode) === autoSelectKode);
