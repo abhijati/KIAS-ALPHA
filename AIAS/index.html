@@ -612,6 +612,7 @@
             isEditMode = true;
             editKodeLama = selectedAssetData.kode_barang || selectedAssetData.kode;
             
+            // Tangkap Foto Lama
             editFotoLama = selectedAssetData.gambar || selectedAssetData.foto || selectedAssetData.url_foto || '';
             if (!editFotoLama) {
                 for (let key in selectedAssetData) {
@@ -619,20 +620,27 @@
                 }
             }
 
+            // Isi Form (Ditambahkan variasi nama kolom agar tidak meleset)
             document.getElementById('nama').value = selectedAssetData.nama_barang || selectedAssetData.nama || '';
             document.getElementById('kode').value = editKodeLama;
-            document.getElementById('kategori').value = selectedAssetData.kategori || 'Mesin Produksi';
-            document.getElementById('lokasi').value = selectedAssetData.lokasi || '';
+            document.getElementById('kategori').value = selectedAssetData.kategori_barang || selectedAssetData.kategori || 'Mesin Produksi';
+            document.getElementById('lokasi').value = selectedAssetData.lokasi_aset || selectedAssetData.lokasi || '';
             document.getElementById('hargaBeli').value = selectedAssetData.harga_beli || selectedAssetData.harga || '';
             document.getElementById('susutBulan').value = selectedAssetData.susut_per_bulan || selectedAssetData.susut || '';
             document.getElementById('bulanBeli').value = selectedAssetData.bulan_pembelian || selectedAssetData.bulan || 'Januari';
             document.getElementById('tahun').value = selectedAssetData.tahun_pembelian || selectedAssetData.tahun || '2026';
-            document.getElementById('kondisi').value = selectedAssetData.kondisi || 'Berfungsi';
+            
+            // Fix Kondisi (Mencakup 'keterangan')
+            const kondisiAsli = selectedAssetData.keterangan || selectedAssetData.kondisi || 'Berfungsi';
+            const selectKondisi = document.getElementById('kondisi');
+            for(let i=0; i<selectKondisi.options.length; i++) {
+                if(selectKondisi.options[i].value.toLowerCase() === kondisiAsli.toLowerCase()) { selectKondisi.selectedIndex = i; break; }
+            }
             
             switchAdminTab('input');
-            
             document.getElementById('editModeBanner').style.display = 'block';
             document.getElementById('btnCancelEdit').style.display = 'block';
+            
             const btnSave = document.getElementById('btnSave');
             btnSave.innerText = "UPDATE DATA ASET";
             
