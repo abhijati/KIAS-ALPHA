@@ -204,7 +204,7 @@
                     const thn = data.tahun_pembelian || data.tahun || "-";
                     document.getElementById('view-tahun').innerText = bln ? `${bln} ${thn}` : thn;
 
-                    // AUTO DETECT & THUMBNAIL API GOOGLE DRIVE
+                    // AUTO DETECT & THUMBNAIL API GOOGLE DRIVE (ANTI-BLOKIR IPHONE)
                     const imgElement = document.getElementById('view-img');
                     let imgSource = data.url_foto || data.gambar || data.foto || data.image || "";
                     
@@ -224,7 +224,8 @@
                         if (imgSource.includes("drive.google.com")) {
                             const fileId = imgSource.match(/[-\w]{25,}/);
                             if (fileId && fileId[0]) {
-                                imgSource = `https://drive.google.com/thumbnail?id=${fileId[0]}&sz=w800`;
+                                // GANTI JADI LINK 'UC' (Biar tembus pengamanan Safari / iPhone)
+                                imgSource = `https://drive.google.com/uc?export=view&id=${fileId[0]}`;
                                 viewUrl = `https://drive.google.com/file/d/${fileId[0]}/view`;
                             }
                         }
