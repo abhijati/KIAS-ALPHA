@@ -224,8 +224,8 @@
                         if (imgSource.includes("drive.google.com")) {
                             const fileId = imgSource.match(/[-\w]{25,}/);
                             if (fileId && fileId[0]) {
-                                // GANTI JADI LINK 'UC' (Biar tembus pengamanan Safari / iPhone)
-                                imgSource = `https://drive.google.com/uc?export=view&id=${fileId[0]}`;
+                                // JURUS PAMUNGKAS: Pakai Server LH3 Google (100% Tembus Safari iOS)
+                                imgSource = `https://lh3.googleusercontent.com/d/${fileId[0]}`;
                                 viewUrl = `https://drive.google.com/file/d/${fileId[0]}/view`;
                             }
                         }
