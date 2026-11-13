@@ -812,7 +812,7 @@
             const originalText = btn.innerHTML;
             
             try {
-                btn.innerHTML = "MEMPROSES " + listToDownload.length + " QR...";
+                btn.innerHTML = "PROCESSING " + listToDownload.length + " QR...";
                 btn.disabled = true;
 
                 const zip = new JSZip();
@@ -878,7 +878,7 @@
                     return;
                 }
 
-                btn.innerHTML = "MENGEPAK FILE ZIP...";
+                btn.innerHTML = "PACING FILE INTO ZIP...";
                 
                 const content = await zip.generateAsync({ type: "blob" });
                 const link = document.createElement('a');
@@ -888,8 +888,8 @@
                 link.click();
                 document.body.removeChild(link);
 
-                showToast("BERHASIL MENDOWNLOAD ZIP", "success");
-                btn.innerHTML = "BERHASIL DI-DOWNLOAD";
+                showToast("DOWNLOADED", "success");
+                btn.innerHTML = "DOWNLOADED";
                 
                 setTimeout(() => {
                     btn.innerHTML = originalText;
