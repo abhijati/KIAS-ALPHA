@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIAS - Smart Asset System (ASD)</title>
+    <!-- LIBRARY QR CODE -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- LIBRARY JSZIP UNTUK DOWNLOAD MASAL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -134,7 +137,7 @@
                 </div>
             </div>
 
-            <!-- GUEST / VIEWER PANEL -->
+            <!-- GUEST / VIEWER PANEL (LIHAT DATABASE) -->
             <div id="guestView" class="hidden">
                 <div class="grid">
                     <div class="input-group">
@@ -179,7 +182,7 @@
                     <button onclick="window.open('https://docs.google.com/spreadsheets/d/1FypxEXpukoM_U3GK44mrY5APpvGRL3uTnR2DGb21jw8/edit', '_blank')" class="btn" style="background: transparent; border: 1px dashed #27272a; color: #8c8c93; font-size: 0.55rem; padding: 0.4rem; margin-top: 0; margin-bottom: 1rem; width: 100%;">
                         SPREADSHEET
                     </button>
-                                                                                           
+                                                                                                    
                     <div class="spec-grid">
                         <div class="spec-item">
                             <div class="spec-label">Kategori</div>
@@ -234,6 +237,14 @@
                         DELETE ASSETS
                     </button>
                 </div>
+
+                <!-- TAMBAHAN: TOMBOL DOWNLOAD ALL QR (HANYA UNTUK ADMIN) -->
+                <div id="btnDownloadZipContainer" style="margin-top: 1.5rem; display: none;">
+                    <button id="btnDownloadZip" onclick="downloadAllQRsAsZip()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+                         DOWNLOAD ALL QR AS ZIP
+                    </button>
+                </div>
+
             </div>
 
             <!-- LOGOUT & VERSION DITEMPATKAN DI BAWAH -->
@@ -270,7 +281,7 @@
             const toast = document.createElement('div');
             toast.id = 'toastPopup';
             toast.className = `toast-popup ${type}`;
-            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '⚠️');
+            const icon = type === 'success' ? '' : (type === 'info' ? '' : '');
             toast.innerHTML = `<span style="margin-right: 6px;">${icon}</span> <span style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px;">${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
@@ -359,6 +370,10 @@
                 document.getElementById('adminTabs').classList.add('hidden');
                 document.getElementById('adminForm').classList.add('hidden');
                 document.getElementById('guestView').classList.remove('hidden');
+                
+                const zipBtn = document.getElementById('btnDownloadZipContainer');
+                if(zipBtn) zipBtn.style.display = 'none';
+
                 loadCloudData();
             }
         }
@@ -368,12 +383,14 @@
             const tabBtnView = document.getElementById('tabBtnView');
             const adminForm = document.getElementById('adminForm');
             const guestView = document.getElementById('guestView');
+            const zipBtn = document.getElementById('btnDownloadZipContainer'); 
 
             if (tab === 'input') {
                 tabBtnInput.classList.add('active'); 
                 tabBtnView.classList.remove('active');
                 adminForm.classList.remove('hidden'); 
                 guestView.classList.add('hidden');
+                if(zipBtn) zipBtn.style.display = 'none'; 
                 
                 // Pastikan tombol selalu aktif saat masuk tab input
                 const btnSave = document.getElementById('btnSave');
@@ -387,6 +404,7 @@
                 tabBtnInput.classList.remove('active');
                 adminForm.classList.add('hidden'); 
                 guestView.classList.remove('hidden');
+                if(zipBtn) zipBtn.style.display = (currentRole === 'admin') ? 'block' : 'none'; 
                 loadCloudData();
             }
         }
@@ -465,7 +483,7 @@
                 const opt = document.createElement('option'); opt.value = index;
                 const kode = item.kode_barang || item.kode || '-';
                 const nama = item.nama_barang || item.nama || '-';
-                opt.textContent = `[${item.kategori || '-'}] ${kode} - ${nama}`;
+                opt.textContent = `[${item.kategori || '-'}] ${kode} ${nama}`;
                 select.appendChild(opt);
             });
             select.dataset.sorted = JSON.stringify(displayList);
@@ -620,9 +638,15 @@
                 }
             }
 
-            // Isi Form (Ditambahkan variasi nama kolom agar tidak meleset)
+            // Isi Form
             document.getElementById('nama').value = selectedAssetData.nama_barang || selectedAssetData.nama || '';
             document.getElementById('kode').value = editKodeLama;
+
+            // 🔒 KUNCI KOLOM KODE ASET SAAT EDIT (Agar URL & QR Tetap Aman)
+            document.getElementById('kode').readOnly = true;
+            document.getElementById('kode').style.opacity = '0.5';
+            document.getElementById('kode').style.cursor = 'not-allowed';
+
             document.getElementById('kategori').value = selectedAssetData.kategori_barang || selectedAssetData.kategori || 'Mesin Produksi';
             document.getElementById('lokasi').value = selectedAssetData.lokasi_aset || selectedAssetData.lokasi || '';
             document.getElementById('hargaBeli').value = selectedAssetData.harga_beli || selectedAssetData.harga || '';
@@ -630,7 +654,7 @@
             document.getElementById('bulanBeli').value = selectedAssetData.bulan_pembelian || selectedAssetData.bulan || 'Januari';
             document.getElementById('tahun').value = selectedAssetData.tahun_pembelian || selectedAssetData.tahun || '2026';
             
-            // Fix Kondisi (Mencakup 'keterangan')
+            // Fix Kondisi
             const kondisiAsli = selectedAssetData.keterangan || selectedAssetData.kondisi || 'Berfungsi';
             const selectKondisi = document.getElementById('kondisi');
             for(let i=0; i<selectKondisi.options.length; i++) {
@@ -644,7 +668,7 @@
             const btnSave = document.getElementById('btnSave');
             btnSave.innerText = "UPDATE DATA ASET";
             
-            showToast("EDIT MODE ACTIVATE. Silakan ubah data.", "info");
+            showToast("EDIT MODE ACTIVATE. Kolom Kode dikunci otomatis.", "info");
         }
 
         function batalkanEdit() {
@@ -652,8 +676,16 @@
             document.getElementById('editModeBanner').style.display = 'none';
             document.getElementById('btnCancelEdit').style.display = 'none';
             
-            document.getElementById('nama').value = ''; document.getElementById('kode').value = '';
-            document.getElementById('hargaBeli').value = ''; document.getElementById('susutBulan').value = '';
+            document.getElementById('nama').value = ''; 
+            document.getElementById('kode').value = '';
+
+            // 🔓 BUKA KEMBALI KUNCI KOLOM KODE UNTUK INPUT BARU
+            document.getElementById('kode').readOnly = false;
+            document.getElementById('kode').style.opacity = '1';
+            document.getElementById('kode').style.cursor = 'text';
+
+            document.getElementById('hargaBeli').value = ''; 
+            document.getElementById('susutBulan').value = '';
             document.getElementById('fotoInput').value = '';
             
             const btnSave = document.getElementById('btnSave');
@@ -731,6 +763,11 @@
                     document.getElementById('hargaBeli').value = ''; 
                     document.getElementById('susutBulan').value = '';
                     document.getElementById('fotoInput').value = '';
+
+                    // 🔓 Pastikan kode terbuka kembali setelah sukses insert
+                    document.getElementById('kode').readOnly = false;
+                    document.getElementById('kode').style.opacity = '1';
+                    document.getElementById('kode').style.cursor = 'text';
                 }
                 
                 localStorage.removeItem('ais_asd_backup');
@@ -742,6 +779,131 @@
                 btn.innerText = isEditMode ? "UPDATE DATA ASET" : "SIMPAN KE DATABASE";
             }
         }
+
+        // FUNGSI BARU: DOWNLOAD SEMUA QR CODE (VERSI LOKAL, BEBAS BUG 2X KLIK & BISA FILTER)
+        async function downloadAllQRsAsZip() {
+            const select = document.getElementById('assetSelect');
+            let listToDownload = [];
+            
+            // 1. Ambil data yang sedang tampil di dropdown (Bisa download sesuai hasil pencarian/filter)
+            if (select && select.dataset.sorted) {
+                listToDownload = JSON.parse(select.dataset.sorted);
+            } else if (rawAssets && rawAssets.length > 0) {
+                listToDownload = rawAssets;
+            }
+
+            // 2. Jika sistem awan (Cloud) masih loading, pakai memori cadangan agar bisa langsung jalan di klik pertama
+            if (!listToDownload || listToDownload.length === 0) {
+                const local = localStorage.getItem('ais_asd_backup');
+                if (local) listToDownload = JSON.parse(local);
+            }
+
+            // 3. Pencegahan jika benar-benar belum ada data
+            if (!listToDownload || listToDownload.length === 0) {
+                if (select && select.innerHTML.includes('MENGAMBIL DATA')) {
+                    showToast("Sedang menarik data dari server, tunggu 2 detik lalu klik lagi...", "info");
+                } else {
+                    showToast("TIDAK ADA DATA ASET", "error");
+                }
+                return;
+            }
+
+            const btn = document.getElementById('btnDownloadZip');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = "MEMPROSES " + listToDownload.length + " QR...";
+                btn.disabled = true;
+
+                const zip = new JSZip();
+                const folderZip = zip.folder("Stiker_QR_ASD");
+                let count = 0;
+
+                // Buat "pabrik" QR rahasia di latar belakang
+                const tempDiv = document.createElement('div');
+                // FIX BUG SAFARI: Jangan pakai display:none, kita sembunyikan jauh di luar layar saja agar tetap digambar oleh sistem
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.left = '-9999px';
+                tempDiv.style.top = '-9999px';
+                tempDiv.style.visibility = 'hidden';
+                document.body.appendChild(tempDiv);
+
+                let currentUrl = window.location.href.replace('index.html', '').split('?')[0];
+                if (!currentUrl.endsWith('/')) currentUrl += '/';
+
+                for (let item of listToDownload) {
+                    const kodeAset = item.kode_barang || item.kode;
+                    if (!kodeAset) continue;
+
+                    const viewPageUrl = `${currentUrl}view.html?kode=${encodeURIComponent(kodeAset)}`;
+                    
+                    tempDiv.innerHTML = '';
+                    
+                    new QRCode(tempDiv, {
+                        text: viewPageUrl,
+                        width: 400,
+                        height: 400,
+                        colorDark : "#09090b",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    // Tambahkan jeda waktu agar RAM/CPU tidak nge-hang saat nge-print ratusan gambar
+                    await new Promise(res => setTimeout(res, 35));
+                    
+                    const canvas = tempDiv.querySelector('canvas');
+                    if (canvas) {
+                        const base64Data = canvas.toDataURL('image/png').split(',')[1];
+                        const safeFileName = kodeAset.replace(/\//g, '_') + ".png";
+                        folderZip.file(safeFileName, base64Data, {base64: true});
+                        count++;
+                    } else {
+                        // Pencegahan jika HP/Browser lawas merender sebagai <img> bukan <canvas>
+                        const img = tempDiv.querySelector('img');
+                        if (img && img.src) {
+                            const base64Data = img.src.split(',')[1];
+                            const safeFileName = kodeAset.replace(/\//g, '_') + ".png";
+                            folderZip.file(safeFileName, base64Data, {base64: true});
+                            count++;
+                        }
+                    }
+                }
+
+                document.body.removeChild(tempDiv);
+
+                if (count === 0) {
+                    showToast("GAGAL MEMBUAT GAMBAR QR", "error");
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+
+                btn.innerHTML = "MENGEPAK FILE ZIP...";
+                
+                const content = await zip.generateAsync({ type: "blob" });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "Stiker_QR_ASD.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showToast("BERHASIL MENDOWNLOAD ZIP", "success");
+                btn.innerHTML = "BERHASIL DI-DOWNLOAD";
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (err) {
+                console.error(err);
+                showToast("TERJADI KESALAHAN SAAT DOWNLOAD", "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
     </script>
 </body>
 </html>
